@@ -25,4 +25,23 @@ export const Endpoint = {
     method: "DELETE",
     url: `${BaseURL}/api/admin/dashboard/deleteProduct`,
   },
+  //user
+
+  register: {
+    method: "POST",
+    url: `${BaseURL}/api/register`,
+  },
+
+  loginuser: {
+    method: "POST",
+    url: `${BaseURL}/api/login`,
+  },
+  userDetails: {
+    method: "GET",
+    url: `${BaseURL}/api/userDetails`,
+  },
+  logout: {
+    method: "GET",
+    url: `${BaseURL}/api/logout`,
+  },
 };

@@ -39,7 +39,7 @@ const Service = () => {
     },
   ];
   return (
-    <div className="container py-25 ">
+    <div id="service" className="container py-25 ">
       <h2 className="text-primary font-bold text-5xl flex justify-center items-center ">
         {" "}
         WHAT WE DO

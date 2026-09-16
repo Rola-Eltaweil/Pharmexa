@@ -6,11 +6,14 @@ import {
   editProduct,
   deleteProduct,
 } from "../controllers/Prodcuts.js";
+
+import adminAuth from "../middleware/adminAuth.js";
+
 const router = express.Router();
 
-router.post("/addProduct", AddProduct);
-router.get("/products", getProducts);
-router.get("/oneProduct/:id", getOneProduct);
-router.put("/editProduct/:id", editProduct);
-router.delete("/deleteProduct/:id", deleteProduct);
+router.post("/addProduct", adminAuth, AddProduct);
+router.get("/products", adminAuth, getProducts);
+router.get("/oneProduct/:id", adminAuth, getOneProduct);
+router.put("/editProduct/:id", adminAuth, editProduct);
+router.delete("/deleteProduct/:id", adminAuth, deleteProduct);
 export default router;

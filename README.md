@@ -1,20 +1,22 @@
 # Pharmexa — Pharmaceutical Website
 
-Pharmexa is a pharmaceutical manufacturing website built with React, Tailwind CSS, Node.js, Express, and MongoDB.
+Pharmexa is a pharmaceutical manufacturing website built with **React, Tailwind CSS, Node.js, Express, and MongoDB**.
 
-The project includes a public pharmaceutical website and an internal dashboard for managing products through CRUD operations.
+The project includes a public pharmaceutical website and an internal admin dashboard for managing pharmaceutical products through full CRUD operations.
+
+---
 
 ## Project Structure
 
 ```text
 Pharmexa/
-│
-├── pharma-website/    # Frontend
-│
-├── server/            # Backend
-│
+
+├── pharma-website/        # Frontend
+├── server/                # Backend
 └── README.md
 ```
+
+---
 
 ## Technologies
 
@@ -35,8 +37,13 @@ Pharmexa/
 - Express.js
 - MongoDB
 - Mongoose
+- JWT
+- Bcrypt
+- Cookie Parser
 - CORS
 - Dotenv
+
+---
 
 ## Features
 
@@ -53,9 +60,14 @@ The public website includes:
   - Form
   - Active Substance
 
-- Products are retrieved from the backend API.
+- Products retrieved from the backend API
+- User registration
+- User login
+- User authentication using JWT
 
-### Admin Dashboard
+---
+
+## Admin Dashboard
 
 The project includes an internal dashboard for product management.
 
@@ -66,39 +78,102 @@ The dashboard supports full CRUD operations:
 - Edit Product
 - Delete Product
 
-## Dashboard Access
+Access to the dashboard is restricted to users with the `admin` role.
 
-After running the frontend locally, open:
+---
+
+## Authentication & Authorization
+
+The project uses **JWT (JSON Web Tokens)** for user authentication and role-based authorization.
+
+After a successful login:
+
+1. The backend verifies the user's email and password.
+2. A JWT is generated.
+3. The JWT contains the authenticated user's ID and role.
+4. The JWT is stored in an `httpOnly` cookie.
+5. Protected routes verify the JWT before allowing access.
+6. Admin routes additionally check that the user's role is `admin`.
+
+Passwords are securely hashed using **Bcrypt** before being stored in the database.
+
+---
+
+## Admin Demo Account
+
+A demo administrator account is provided for evaluation purposes.
+
+```text
+Email:    rola2002el@gmail.com
+Password: Rola1234
+Role:     admin
+```
+
+Use these credentials to log in and test the admin dashboard.
+
+### Dashboard
+
+After logging in, open:
 
 ```text
 http://localhost:5173/dashboard
 ```
 
-The CRUD operations can be found under:
+Then navigate to:
 
 ```text
 Dashboard → Products
 ```
 
-The **Products** section in the dashboard is where products can be added, viewed, edited, and deleted.
+From the Products section, you can test:
+
+- Adding a product
+- Viewing products
+- Editing a product
+- Deleting a product
+
+---
 
 ## Environment Variables
 
 The `.env` file is **not included in this repository** for security reasons.
 
-The backend requires a MongoDB connection string.
+The backend requires both a MongoDB connection string and a JWT secret key.
 
 Create a `.env` file inside the `server` folder:
 
 ```env
 DATABASE_CONNECTION=your_mongodb_connection_string
+JWT_SECRET_KEY=your_jwt_secret_key
 ```
 
-Replace `your_mongodb_connection_string` with your own MongoDB connection string.
+Replace:
 
-## Installation
+- `your_mongodb_connection_string` with a valid MongoDB connection string.
+- `your_jwt_secret_key` with a secure secret key used to sign JWT tokens.
 
-### 1. Frontend
+### Important
+
+The actual MongoDB connection string and JWT secret are intentionally excluded from the repository.
+
+The `.env` file should not be committed to GitHub.
+
+---
+
+# Installation
+
+## 1. Clone the Repository
+
+Clone the project and open the project directory.
+
+```bash
+git clone <repository-url>
+cd Pharmexa
+```
+
+---
+
+## 2. Frontend Setup
 
 Open the frontend folder:
 
@@ -106,13 +181,13 @@ Open the frontend folder:
 cd pharma-website
 ```
 
-Install dependencies:
+Install the dependencies:
 
 ```bash
 npm install
 ```
 
-Run the frontend:
+Start the frontend development server:
 
 ```bash
 npm run dev
@@ -124,7 +199,9 @@ The frontend will normally run on:
 http://localhost:5173
 ```
 
-### 2. Backend
+---
+
+## 3. Backend Setup
 
 Open another terminal and go to the server folder:
 
@@ -132,47 +209,103 @@ Open another terminal and go to the server folder:
 cd server
 ```
 
-Install dependencies:
+Install the dependencies:
 
 ```bash
 npm install
 ```
 
-Create the `.env` file and add your MongoDB connection string.
+Create a `.env` file inside the `server` folder:
 
-Then start the server:
+```env
+DATABASE_CONNECTION=your_mongodb_connection_string
+JWT_SECRET_KEY=your_jwt_secret_key
+```
+
+Start the backend server:
 
 ```bash
 npm run dev
 ```
 
-## Using the CRUD Dashboard
+The backend runs on:
 
-1. Start the backend server.
-2. Start the frontend.
-3. Open:
+```text
+http://localhost:5000
+```
+
+---
+
+# Using the Admin Dashboard
+
+To test the complete CRUD functionality:
+
+### Step 1 — Start the Backend
+
+```bash
+cd server
+npm run dev
+```
+
+### Step 2 — Start the Frontend
+
+```bash
+cd pharma-website
+npm run dev
+```
+
+### Step 3 — Login
+
+Open the login page and use the demo admin account:
+
+```text
+Email:    rola2002el@gmail.com
+Password: Rola1234
+```
+
+### Step 4 — Open the Dashboard
+
+Go to:
 
 ```text
 http://localhost:5173/dashboard
 ```
 
-4. Select **Products** from the dashboard navigation.
-5. From there, you can:
+### Step 5 — Open Products
 
-   - Add a new product
-   - View all products
-   - Edit an existing product
-   - Delete a product
+Navigate to:
 
-## Important
+```text
+Dashboard → Products
+```
 
-The MongoDB connection is not included in this repository.
+You can now test the complete product management system.
 
-The `.env` file has been intentionally excluded to prevent exposing database credentials.
+---
 
-The project must be configured with a valid MongoDB connection before the backend and CRUD functionality can be used.
+# Product CRUD Operations
 
-## API Endpoints
+The admin dashboard provides the following operations:
+
+### Create Product
+
+Administrators can add a new pharmaceutical product through the dashboard.
+
+### View Products
+
+Administrators can view all products stored in the MongoDB database.
+
+### Edit Product
+
+Administrators can update the information of an existing product.
+
+### Delete Product
+
+Administrators can delete an existing product.
+
+---
+
+# API Endpoints
 
 The product CRUD API is available under:
 
@@ -180,36 +313,215 @@ The product CRUD API is available under:
 /api/admin/dashboard
 ```
 
-### Create Product
+## Create Product
 
-```text
+```http
 POST /api/admin/dashboard/addProduct
 ```
 
-### Get All Products
+Creates a new product.
 
-```text
+---
+
+## Get All Products
+
+```http
 GET /api/admin/dashboard/products
 ```
 
-### Get One Product
+Returns all products.
 
-```text
+---
+
+## Get One Product
+
+```http
 GET /api/admin/dashboard/oneProduct/:id
 ```
 
-### Update Product
+Returns a specific product by its ID.
 
-```text
+---
+
+## Update Product
+
+```http
 PUT /api/admin/dashboard/editProduct/:id
 ```
 
-### Delete Product
+Updates an existing product.
 
-```text
+---
+
+## Delete Product
+
+```http
 DELETE /api/admin/dashboard/deleteProduct/:id
 ```
 
-## Notes
+Deletes an existing product.
 
-This project was developed as part of a frontend/backend internship task focusing on building a functional pharmaceutical website and implementing a backend-connected CRUD system for product management.
+---
+
+# Authentication API
+
+## Register
+
+```http
+POST /api/register
+```
+
+Creates a new user account.
+
+Newly registered users receive the default `user` role.
+
+---
+
+## Login
+
+```http
+POST /api/login
+```
+
+Authenticates the user and creates a JWT authentication cookie.
+
+---
+
+## Get User Details
+
+```http
+GET /api/userDetails
+```
+
+Returns the authenticated user's details.
+
+This endpoint requires authentication.
+
+---
+
+## Logout
+
+```http
+POST /api/logout
+```
+
+Logs the user out and clears the authentication cookie.
+
+---
+
+# Role-Based Access
+
+The application uses two user roles:
+
+```text
+user
+admin
+```
+
+### User
+
+A regular user can:
+
+- Register
+- Login
+- Access the public website
+- Browse products
+
+### Admin
+
+An administrator can additionally:
+
+- Access the Admin Dashboard
+- Create products
+- View products
+- Edit products
+- Delete products
+
+The admin role is verified on the backend to protect the CRUD API endpoints.
+
+---
+
+# Security
+
+The project implements several security measures:
+
+- Passwords are hashed using Bcrypt.
+- Authentication is handled using JWT.
+- JWT tokens are stored in `httpOnly` cookies.
+- Admin routes are protected with role-based authorization.
+- Database credentials are stored in environment variables.
+- JWT secrets are stored in environment variables.
+- The `.env` file is excluded from the repository.
+- Regular users cannot assign themselves the `admin` role during registration.
+
+---
+
+# Important Notes
+
+The MongoDB connection and JWT secret are **not included in this repository**.
+
+The `.env` file has intentionally been excluded to prevent exposing:
+
+- MongoDB database credentials
+- JWT secret key
+
+A valid MongoDB connection and JWT secret must be configured before running the backend.
+
+The admin credentials provided in this README are for **demo and evaluation purposes**.
+
+---
+
+# Project URLs
+
+### Frontend
+
+```text
+http://localhost:5173
+```
+
+### Admin Dashboard
+
+```text
+http://localhost:5173/dashboard
+```
+
+### Backend
+
+```text
+http://localhost:5000
+```
+
+---
+
+# Internship Task
+
+This project was developed as part of a **frontend/backend internship task**.
+
+The project focuses on building a functional pharmaceutical website using React and implementing a backend-connected product management system using Node.js, Express, and MongoDB.
+
+The project demonstrates:
+
+- React frontend development
+- Responsive UI development with Tailwind CSS
+- React Router navigation
+- Redux state management
+- REST API integration
+- MongoDB database integration
+- User authentication
+- JWT-based authorization
+- Role-based access control
+- Secure password hashing
+- Full CRUD operations
+- Admin dashboard development
+
+---
+
+## Demo Admin Credentials
+
+```text
+Email:    rola2002el@gmail.com
+Password: Rola1234
+Role:     admin
+```
+
+Use the credentials above to access the dashboard and test the product CRUD functionality.

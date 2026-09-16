@@ -5,6 +5,9 @@ import cors from "cors";
 import dataBaseConnection from "./config/db.js";
 import contact from "./routing/contactRoutes.js";
 import Product from "./routing/Product.js";
+import userAuth from "./routing/user.js";
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 
 const app = express();
@@ -17,12 +20,13 @@ app.use(
 );
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cookieParser());
 
 dataBaseConnection();
 const PORT = 5000;
-
 app.use("/api/user", contact);
 app.use("/api/admin/dashboard", Product);
+app.use("/api", userAuth);
 app.listen(PORT, () => {
   console.log("server listening now!");
 });

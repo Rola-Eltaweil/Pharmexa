@@ -2,7 +2,10 @@ import axios from "axios";
 
 export const postData = async (url, data) => {
   try {
-    const created = await axios.post(url, data);
+    const created = await axios.post(url, data, {
+      withCredentials: true,
+    });
+
     return created;
   } catch (error) {
     throw error;
@@ -11,7 +14,10 @@ export const postData = async (url, data) => {
 
 export const getData = async (url) => {
   try {
-    const getdata = await axios.get(url);
+    const getdata = await axios.get(url, {
+      withCredentials: true,
+    });
+
     return getdata;
   } catch (error) {
     throw error;
@@ -19,22 +25,23 @@ export const getData = async (url) => {
 };
 
 export const editData = async (url, data) => {
-  console.log("EDIT DATA FUNCTION START");
-
   try {
-    const response = await axios.put(url, data);
-
-    console.log("EDIT DATA RESPONSE:", response);
+    const response = await axios.put(url, data, {
+      withCredentials: true,
+    });
 
     return response;
   } catch (error) {
-    console.log("EDIT DATA ERROR:", error);
     throw error;
   }
 };
+
 export const deleteData = async (url) => {
   try {
-    const deletedOne = await axios.delete(url);
+    const deletedOne = await axios.delete(url, {
+      withCredentials: true,
+    });
+
     return deletedOne;
   } catch (error) {
     throw error;
