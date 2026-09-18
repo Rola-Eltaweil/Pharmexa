@@ -133,3 +133,150 @@ export const logout = async (req, res) => {
     });
   }
 };
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req._id;
+    const { name, email } = req.body;
+
+    if (!name || name.trim().length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Name must be at least 3 characters",
+      });
+    }
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const existingUser = await user.findOne({
+      email,
+      _id: { $ne: userId },
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is already in use",
+      });
+    }
+
+    const updatedUser = await user
+      .findByIdAndUpdate(
+        userId,
+        {
+          name: name.trim(),
+          email: email.trim(),
+        },
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+    });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req?._id;
+    const { currentPassword, newPassword } = req.body;
+
+    // Check required fields
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required",
+      });
+    }
+
+    // Validate new password
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 8 characters",
+      });
+    }
+
+    if (!/[a-z]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must contain at least one lowercase letter",
+      });
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must contain at least one uppercase letter",
+      });
+    }
+
+    // Find logged-in user
+    const existingUser = await user.findById(userId);
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check current password
+    const isPasswordCorrect = await bcrypt.compare(
+      currentPassword,
+      existingUser.password,
+    );
+
+    if (!isPasswordCorrect) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    existingUser.password = hashedPassword;
+
+    await existingUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to change password",
+    });
+  }
+};

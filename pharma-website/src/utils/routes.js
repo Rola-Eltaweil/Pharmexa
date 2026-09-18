@@ -40,8 +40,16 @@ export const Endpoint = {
     method: "GET",
     url: `${BaseURL}/api/userDetails`,
   },
+  updateProfile: {
+    method: "PUT",
+    url: `${BaseURL}/api/profile`,
+  },
+  changePassword: {
+    method: "PUT",
+    url: `${BaseURL}/api/change-password`,
+  },
   logout: {
-    method: "GET",
+    method: "POST",
     url: `${BaseURL}/api/logout`,
   },
 };

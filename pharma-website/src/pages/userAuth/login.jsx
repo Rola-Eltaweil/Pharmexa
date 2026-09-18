@@ -29,7 +29,7 @@ const Login = () => {
       console.log(loginU);
       toast.success(loginU?.data?.message);
       dispatch(setuser(loginU?.data?.data));
-      navigate("/");
+      navigate("/customer_Dahboard");
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }
