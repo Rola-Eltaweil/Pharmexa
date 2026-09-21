@@ -52,4 +52,26 @@ export const Endpoint = {
     method: "POST",
     url: `${BaseURL}/api/logout`,
   },
+  //service
+  allServices: {
+    method: "GET",
+    url: `${BaseURL}/api/admin/dashboard/service`,
+  },
+  oneService: {
+    method: "GET",
+    url: `${BaseURL}/api/admin/dashboard/service`,
+  },
+
+  addService: {
+    method: "POST",
+    url: `${BaseURL}/api/admin/dashboard/service`,
+  },
+  editService: {
+    method: "PUT",
+    url: `${BaseURL}/api/admin/dashboard/service`,
+  },
+  deleteService: {
+    method: "DELETE",
+    url: `${BaseURL}/api/admin/dashboard/service`,
+  },
 };

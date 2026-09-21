@@ -11,6 +11,7 @@ import Register from "../pages/userAuth/register";
 import { createBrowserRouter } from "react-router-dom";
 import { AdminProtected } from "../pages/Admin/AdminProtect";
 import CustomerDashboard from "../pages/customer/customerDashboard";
+import AdminService from "../pages/Admin/AdminService";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
               {
                 path: "products",
                 element: <AdminProducts />,
+              },
+              {
+                path: "service",
+                element: <AdminService />,
               },
             ],
           },

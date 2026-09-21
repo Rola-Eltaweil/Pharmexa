@@ -1,4 +1,9 @@
-import { ClipboardList, LayoutDashboard, Package } from "lucide-react";
+import {
+  ClipboardList,
+  LayoutDashboard,
+  Package,
+  BriefcaseBusiness,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 const Aside = () => {
   return (
@@ -32,6 +37,12 @@ const Aside = () => {
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
               <Package size={19} />
               <span className="text-sm font-medium">Products</span>
+            </button>
+          </Link>
+          <Link to={"/dashboard/service"}>
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+              <BriefcaseBusiness size={19} />
+              <span className="text-sm font-medium">Service</span>
             </button>
           </Link>
 

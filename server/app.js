@@ -7,7 +7,7 @@ import contact from "./routing/contactRoutes.js";
 import Product from "./routing/Product.js";
 import userAuth from "./routing/user.js";
 import cookieParser from "cookie-parser";
-
+import Service from "./routing/Service.js";
 dotenv.config();
 
 const app = express();
@@ -26,6 +26,8 @@ dataBaseConnection();
 const PORT = 5000;
 app.use("/api/user", contact);
 app.use("/api/admin/dashboard", Product);
+app.use("/api/admin/dashboard/service", Service);
+
 app.use("/api", userAuth);
 app.listen(PORT, () => {
   console.log("server listening now!");
