@@ -3,7 +3,26 @@ const BaseURL = "http://localhost:5000";
 export const Endpoint = {
   createContact: {
     method: "POST",
-    url: `${BaseURL}/api/user/contact`,
+    url: `${BaseURL}/api/customerService/contact`,
+  },
+
+  allContacts: {
+    method: "GET",
+    url: `${BaseURL}/api/customerService/contacts`,
+  },
+
+  oneContact: {
+    method: "GET",
+    url: `${BaseURL}/api/customerService/contact`,
+  },
+  updateContactStatus: {
+    method: "PUT",
+    url: `${BaseURL}/api/customerService/contact`,
+  },
+
+  deleteContact: {
+    method: "DELETE",
+    url: `${BaseURL}/api/customerService/contact`,
   },
   addProduct: {
     method: "POST",

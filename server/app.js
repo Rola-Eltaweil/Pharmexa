@@ -24,7 +24,7 @@ app.use(cookieParser());
 
 dataBaseConnection();
 const PORT = 5000;
-app.use("/api/user", contact);
+app.use("/api/customerService", contact);
 app.use("/api/admin/dashboard", Product);
 app.use("/api/admin/dashboard/service", Service);
 

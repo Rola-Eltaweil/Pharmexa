@@ -30,6 +30,7 @@ const Login = () => {
       toast.success(loginU?.data?.message);
       dispatch(setuser(loginU?.data?.data));
       navigate("/customer_Dahboard");
+      console.log(loginU);
     } catch (error) {
       toast.error(error?.response?.data?.message);
     }

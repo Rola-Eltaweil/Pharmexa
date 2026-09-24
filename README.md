@@ -525,3 +525,106 @@ Role:     admin
 ```
 
 Use the credentials above to access the dashboard and test the product CRUD functionality.
+
+//task 7
+
+## Customer Service Dashboard
+
+The project also includes a dedicated **Customer Service Dashboard** for managing customer requests and inquiries.
+
+### Customer Service Demo Account
+
+A demo customer service account is provided for evaluation purposes.
+
+```text
+Email:    sallyService@gmail.com
+Password: passwordSally1234
+Role:     service
+```
+
+You can use these credentials to log in and access the Customer Service Dashboard.
+
+### How to Access the Customer Service Dashboard
+
+After logging in with the customer service account:
+
+1. Open the website.
+2. Use the user dropdown menu in the **Navbar**.
+3. A **Customer Service** option will appear for users with the `service` role.
+4. Click **Customer Service** to access the dashboard.
+
+The dashboard is protected and is only accessible to users with the `service` role.
+
+### Customer Request Management
+
+The Customer Service Dashboard allows the service team to manage customer requests submitted through the website.
+
+The implemented functionality includes:
+
+- View all customer requests.
+- View detailed information for each request.
+- Search requests by:
+
+  - Customer name
+  - Email
+  - Company name
+  - Request type
+  - Subject
+
+- Sort requests by:
+
+  - Oldest first
+  - Newest first
+
+- View request status.
+- Update request status.
+- Delete requests.
+- Display the request submission date.
+- View the complete request message and customer information.
+
+### Request Status
+
+Each customer request has one of the following statuses:
+
+```text
+Pending
+In Progress
+Resolved
+```
+
+New requests are automatically created with the `Pending` status.
+
+The Customer Service team can update the status directly from the dashboard.
+
+### Customer Request Information
+
+Each request contains information such as:
+
+- Customer name
+- Email
+- Company name
+- Request type
+- Subject
+- Message
+- Status
+- Submission date
+
+The customer request data is stored in **MongoDB** and retrieved through the backend API.
+
+### Customer Request API
+
+The Customer Service functionality is handled through the following API routes:
+
+```text
+POST   /api/customerService/contact
+GET    /api/customerService/contacts
+GET    /api/customerService/contact/:id
+PUT    /api/customerService/contact/:id/status
+DELETE /api/customerService/contact/:id
+```
+
+The customer can submit a request through the website, while the Customer Service team can view and manage the submitted requests from the dashboard.
+
+### Additional Improvements
+
+The Customer Service Dashboard is already functional, but additional features can be added if needed, such as advanced filtering, pagination, request categories, or additional request-management functionality.

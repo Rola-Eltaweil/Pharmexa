@@ -1,19 +1,26 @@
 import React, { useState } from "react";
+
 import form from "../assets/slide2.jpg";
+
 import { postData } from "../utils/apiSummary";
+
 import { Endpoint } from "../utils/routes";
+
 import { toast } from "react-toastify";
+
 const Contact = () => {
   const [data, setdata] = useState({
     name: "",
     email: "",
     companyName: "",
+    requestType: "",
     subject: "",
     message: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setdata((prev) => ({
       ...prev,
       [name]: value,
@@ -23,24 +30,26 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const contact = await postData(Endpoint.createContact.url, data, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+
+      const contact = await postData(Endpoint.createContact.url, data);
+
       console.log(contact);
+
       if (contact.data.success) {
         toast.success(contact.data.message);
+
         setdata({
           name: "",
           email: "",
           companyName: "",
+          requestType: "",
           subject: "",
           message: "",
         });
       }
     } catch (error) {
       console.log(error);
+
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
@@ -48,18 +57,24 @@ const Contact = () => {
   return (
     <>
       <h2 className="text-xl sm:text-3xl md:text-5xl text-primary font-semibold pb-5 flex justify-center items-center my-10">
-        {" "}
         Contact Us
       </h2>
+
       <div className="container flex md:flex-row flex-col gap-4 justify-center items-stretch h-full">
         <div className="w-full h-full">
-          <img src={form} className="rounded-xl w-full h-full object-cover" />
+          <img
+            src={form}
+            className="rounded-xl w-full h-full object-cover"
+            alt="Contact us"
+          />
+
           <p className="text-[16px] text-gray-500 my-2 pt-3">
             Have a Question? We're Here to Help Whether you have a product
             inquiry, partnership opportunity, or need more information about our
             pharmaceutical solutions, our team is ready to assist you 💙.
           </p>
         </div>
+
         <form className="flex flex-col gap-5 container" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <input
@@ -81,14 +96,42 @@ const Contact = () => {
             />
           </div>
 
-          <input
-            onChange={handleChange}
-            value={data.companyName}
-            type="text"
-            name="companyName"
-            placeholder="Company Name"
-            className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-primary"
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <input
+              onChange={handleChange}
+              value={data.companyName}
+              type="text"
+              name="companyName"
+              placeholder="Company Name"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-primary"
+            />
+
+            <select
+              onChange={handleChange}
+              value={data.requestType}
+              name="requestType"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-primary bg-white"
+            >
+              <option value="" disabled>
+                Select Request Type
+              </option>
+
+              <option value="Product Inquiry">Product Inquiry</option>
+
+              <option value="Service Inquiry">Service Inquiry</option>
+
+              <option value="Export / Distribution Inquiry">
+                Export / Distribution Inquiry
+              </option>
+
+              <option value="Partnership Inquiry">Partnership Inquiry</option>
+
+              <option value="General Inquiry">General Inquiry</option>
+
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
           <input
             onChange={handleChange}
             value={data.subject}
@@ -97,6 +140,7 @@ const Contact = () => {
             placeholder="Subject"
             className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-primary"
           />
+
           <textarea
             onChange={handleChange}
             value={data.message}
