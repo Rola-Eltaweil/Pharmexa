@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Eye,
@@ -27,15 +27,18 @@ const CustomerService = () => {
   const requests = useSelector((state) => state.contact.Customers);
 
   const [loading, setLoading] = useState(true);
+
   const [selectedRequest, setSelectedRequest] = useState(null);
+
   const [viewLoading, setViewLoading] = useState(false);
 
   // Search
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter
+  // Filter / Sort
   const [sortOrder, setSortOrder] = useState("oldest");
 
+  // Get all customer requests
   const getAllRequests = async () => {
     try {
       setLoading(true);
@@ -56,10 +59,48 @@ const CustomerService = () => {
     }
   };
 
+  // Search customer requests from backend
+  const searchRequests = async () => {
+    try {
+      const params = new URLSearchParams();
+
+      if (searchTerm.trim()) {
+        params.append("search", searchTerm.trim());
+      }
+
+      const url = params.toString()
+        ? `${Endpoint.searchContacts.url}?${params.toString()}`
+        : Endpoint.allContacts.url;
+
+      const response = await getData(url);
+
+      if (response.data.success) {
+        dispatch(setCustomersData(response.data.data));
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(
+        error.response?.data?.message || "Failed to search customer requests",
+      );
+    }
+  };
+
+  // Get all requests when page loads
   useEffect(() => {
     getAllRequests();
   }, []);
 
+  // Search whenever searchTerm changes
+  useEffect(() => {
+    const delaySearch = setTimeout(() => {
+      searchRequests();
+    }, 300);
+
+    return () => clearTimeout(delaySearch);
+  }, [searchTerm]);
+
+  // View request details
   const handleView = async (id) => {
     try {
       setViewLoading(true);
@@ -80,6 +121,7 @@ const CustomerService = () => {
     }
   };
 
+  // Update request status
   const handleStatusChange = async (id, status) => {
     try {
       const response = await editData(
@@ -107,6 +149,7 @@ const CustomerService = () => {
     }
   };
 
+  // Delete request
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this request?",
@@ -135,10 +178,12 @@ const CustomerService = () => {
     }
   };
 
+  // Close modal
   const closeModal = () => {
     setSelectedRequest(null);
   };
 
+  // Status style
   const getStatusStyle = (status) => {
     if (status === "Pending") {
       return {
@@ -160,38 +205,24 @@ const CustomerService = () => {
     };
   };
 
-  // Search + Sort
-  const filteredRequests = useMemo(() => {
-    const search = searchTerm.toLowerCase().trim();
+  // Sort requests
+  const sortedRequests = [...requests].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
 
-    const filtered = requests.filter((request) => {
-      return (
-        request.name?.toLowerCase().includes(search) ||
-        request.email?.toLowerCase().includes(search) ||
-        request.companyName?.toLowerCase().includes(search) ||
-        request.requestType?.toLowerCase().includes(search) ||
-        request.subject?.toLowerCase().includes(search)
-      );
-    });
+    if (sortOrder === "oldest") {
+      return dateA - dateB;
+    }
 
-    return [...filtered].sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-
-      if (sortOrder === "oldest") {
-        return dateA - dateB;
-      }
-
-      return dateB - dateA;
-    });
-  }, [requests, searchTerm, sortOrder]);
+    return dateB - dateA;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 md:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900">
+          <h1 className="text-2xl font-semibold text-gray-900 md:text-3xl">
             Customer Requests
           </h1>
 
@@ -218,7 +249,7 @@ const CustomerService = () => {
             />
           </div>
 
-          {/* Filter */}
+          {/* Filter / Sort */}
           <div className="relative flex items-center gap-2">
             <Filter size={17} className="text-gray-500" />
 
@@ -236,13 +267,13 @@ const CustomerService = () => {
 
         {/* Table */}
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-          {/* Vertical scroll after many requests */}
           <div
             className={`overflow-x-auto ${
-              filteredRequests.length > 5 ? "max-h-[430px] overflow-y-auto" : ""
+              sortedRequests.length > 5 ? "max-h-[430px] overflow-y-auto" : ""
             }`}
           >
             <table className="w-full min-w-[1100px] text-left">
+              {/* Table Header */}
               <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50">
                 <tr>
                   <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -275,6 +306,7 @@ const CustomerService = () => {
                 </tr>
               </thead>
 
+              {/* Table Body */}
               <tbody className="divide-y divide-gray-100">
                 {loading ? (
                   <tr>
@@ -285,7 +317,7 @@ const CustomerService = () => {
                       Loading requests...
                     </td>
                   </tr>
-                ) : filteredRequests.length === 0 ? (
+                ) : sortedRequests.length === 0 ? (
                   <tr>
                     <td
                       colSpan="7"
@@ -297,7 +329,7 @@ const CustomerService = () => {
                     </td>
                   </tr>
                 ) : (
-                  filteredRequests.map((request) => {
+                  sortedRequests.map((request) => {
                     const currentStatus = request.status || "Pending";
 
                     const statusStyle = getStatusStyle(currentStatus);
@@ -352,7 +384,7 @@ const CustomerService = () => {
                         </td>
 
                         {/* Date */}
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="whitespace-nowrap px-6 py-4">
                           <span className="text-sm text-gray-500">
                             {new Date(request.createdAt).toLocaleDateString()}
                           </span>
@@ -410,7 +442,7 @@ const CustomerService = () => {
         {!loading && (
           <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
             <span>
-              Showing {filteredRequests.length} of {requests.length} requests
+              Showing {sortedRequests.length} of {requests.length} requests
             </span>
           </div>
         )}
@@ -448,6 +480,7 @@ const CustomerService = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-5 px-6 py-6 md:grid-cols-2">
+                {/* Customer */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Customer
@@ -458,6 +491,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Email */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Email
@@ -468,6 +502,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Company */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Company
@@ -478,6 +513,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Request Type */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Request Type
@@ -488,6 +524,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Subject */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Subject
@@ -498,6 +535,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Status */}
                 <div>
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Status
@@ -508,6 +546,7 @@ const CustomerService = () => {
                   </p>
                 </div>
 
+                {/* Request Details */}
                 <div className="md:col-span-2">
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Request Details
@@ -518,6 +557,7 @@ const CustomerService = () => {
                   </div>
                 </div>
 
+                {/* Submitted */}
                 <div className="md:col-span-2">
                   <p className="text-xs font-medium uppercase text-gray-400">
                     Submitted

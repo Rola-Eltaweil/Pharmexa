@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import user from "../models/user.js";
+import Product from "../models/Product.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -277,6 +278,68 @@ export const changePassword = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to change password",
+    });
+  }
+};
+
+export const getProductsuser = async (req, res) => {
+  try {
+    const AllProducts = await Product.find();
+    if (AllProducts) {
+      return res.status(200).json({
+        success: true,
+        message: "All Product get successfully. ",
+        data: AllProducts,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const searchProducts = async (req, res) => {
+  try {
+    const { search, type, form, activeSubstance } = req.query;
+
+    const filter = {};
+
+    // Search by name or description
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Filter by type
+    if (type && type !== "All Types") {
+      filter.type = type;
+    }
+
+    // Filter by form
+    if (form && form !== "All Forms") {
+      filter.form = form;
+    }
+
+    // Filter by active substance
+    if (activeSubstance && activeSubstance !== "All Substances") {
+      filter.activeSubstance = activeSubstance;
+    }
+
+    const products = await Product.find(filter);
+
+    res.status(200).json({
+      success: true,
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to search products",
+      error: error.message,
     });
   }
 };

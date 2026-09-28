@@ -164,3 +164,62 @@ export const deleteContact = async (req, res) => {
     });
   }
 };
+
+export const searchContacts = async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    const filter = {};
+
+    // Search by customer, email, company, request type, or subject
+    if (search) {
+      filter.$or = [
+        {
+          name: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          email: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          companyName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          requestType: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          subject: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    const contacts = await Contact.find(filter).sort({
+      createdAt: -1,
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: contacts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to search customer requests",
+      error: error.message,
+    });
+  }
+};

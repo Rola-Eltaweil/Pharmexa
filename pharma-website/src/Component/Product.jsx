@@ -1,28 +1,50 @@
 import React, { useEffect, useState } from "react";
+
 import ProductVisual from "../pages/ProductVisual ";
 import ProductFilters from "./ProductFilter";
 import ProductCard from "./ProdcutCard";
+
 import { getData } from "../utils/apiSummary";
 import { Endpoint } from "../utils/routes";
+
 import { setProducts } from "../redux/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const Product = () => {
   const dispatch = useDispatch();
 
-  // Products from Redux
   const products = useSelector((state) => state.product.products);
 
-  // Filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("All Types");
   const [selectedForm, setSelectedForm] = useState("All Forms");
   const [selectedSubstance, setSelectedSubstance] = useState("All Substances");
 
-  // Get all products
-  const Allproducts = async () => {
+  const searchProducts = async () => {
     try {
-      const response = await getData(Endpoint.AllProduct.url);
+      const params = new URLSearchParams();
+
+      if (searchTerm.trim()) {
+        params.append("search", searchTerm.trim());
+      }
+
+      if (selectedType !== "All Types") {
+        params.append("type", selectedType);
+      }
+
+      if (selectedForm !== "All Forms") {
+        params.append("form", selectedForm);
+      }
+
+      if (selectedSubstance !== "All Substances") {
+        params.append("activeSubstance", selectedSubstance);
+      }
+
+      const url = params.toString()
+        ? `${Endpoint.searchProduct.url}?${params.toString()}`
+        : Endpoint.AllProductuser.url;
+
+      const response = await getData(url);
 
       dispatch(setProducts(response?.data?.data || []));
     } catch (error) {
@@ -31,27 +53,8 @@ const Product = () => {
   };
 
   useEffect(() => {
-    Allproducts();
-  }, []);
-
-  // Filter products
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description?.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesType =
-      selectedType === "All Types" || product.type === selectedType;
-
-    const matchesForm =
-      selectedForm === "All Forms" || product.form === selectedForm;
-
-    const matchesSubstance =
-      selectedSubstance === "All Substances" ||
-      product.activeSubstance === selectedSubstance;
-
-    return matchesSearch && matchesType && matchesForm && matchesSubstance;
-  });
+    searchProducts();
+  }, [searchTerm, selectedType, selectedForm, selectedSubstance]);
 
   return (
     <div className="container mx-auto">
@@ -89,10 +92,8 @@ const Product = () => {
 
       {/* Products */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-6 pb-12">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((data) => (
-            <ProductCard key={data._id} data={data} />
-          ))
+        {products.length > 0 ? (
+          products.map((data) => <ProductCard key={data._id} data={data} />)
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-gray-500 text-lg">No products found.</p>

@@ -8,6 +8,7 @@ import {
 } from "../controllers/Prodcuts.js";
 
 import adminAuth from "../middleware/adminAuth.js";
+import userAuth from "../middleware/userAuth.js";
 
 const router = express.Router();
 

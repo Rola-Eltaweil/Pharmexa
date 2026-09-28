@@ -6,11 +6,13 @@ import {
   getContactById,
   updateContactStatus,
   deleteContact,
+  searchContacts,
 } from "../controllers/contactController.js";
 
 import userAuth from "../middleware/userAuth.js";
 
 const router = express.Router();
+router.get("/search", searchContacts);
 
 router.post("/contact", userAuth, createContact);
 
