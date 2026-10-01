@@ -1,25 +1,41 @@
 import express from "express";
+
 import {
-  login,
-  logout,
-  register,
-  userDetails,
-  updateUserProfile,
-  changePassword,
-  getProductsuser,
-  searchProducts,
-} from "../controllers/user.js";
-import userAuth from "../middleware/userAuth.js";
+  AddProduct,
+  getProducts,
+  getOneProduct,
+  editProduct,
+  deleteProduct,
+} from "../controllers/Prodcuts.js";
+
+import authorizeRoles from "../middleware/rolaAuth.js";
+import authMiddleware from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
-router.get("/userDetails", userAuth, userDetails);
-router.post("/logout", logout);
-router.put("/profile", userAuth, updateUserProfile);
-router.put("/change-password", userAuth, changePassword);
-router.get("/products", userAuth, getProductsuser);
-router.get("/search", searchProducts);
+router.post("/addProduct", authMiddleware, authorizeRoles("admin"), AddProduct);
+
+router.get("/products", authMiddleware, authorizeRoles("admin"), getProducts);
+
+router.get(
+  "/oneProduct/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  getOneProduct,
+);
+
+router.put(
+  "/editProduct/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  editProduct,
+);
+
+router.delete(
+  "/deleteProduct/:id",
+  authMiddleware,
+  authorizeRoles("admin"),
+  deleteProduct,
+);
 
 export default router;

@@ -8,17 +8,21 @@ import {
   deleteService,
 } from "../controllers/Service.js";
 
-import adminAuth from "../middleware/adminAuth.js";
+import authMiddleware from "../middleware/auth.js";
+import authorizeRoles from "../middleware/rolaAuth.js";
 
 const router = express.Router();
 
 // Public
 router.get("/", getServices);
+
 router.get("/:id", getServiceById);
 
 // Admin only
-router.post("/", adminAuth, createService);
-router.put("/:id", adminAuth, updateService);
-router.delete("/:id", adminAuth, deleteService);
+router.post("/", authMiddleware, authorizeRoles("admin"), createService);
+
+router.put("/:id", authMiddleware, authorizeRoles("admin"), updateService);
+
+router.delete("/:id", authMiddleware, authorizeRoles("admin"), deleteService);
 
 export default router;

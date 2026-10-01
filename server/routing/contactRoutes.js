@@ -9,19 +9,41 @@ import {
   searchContacts,
 } from "../controllers/contactController.js";
 
-import userAuth from "../middleware/userAuth.js";
+import authMiddleware from "../middleware/auth.js";
+import authorizeRoles from "../middleware/rolaAuth.js";
 
 const router = express.Router();
+
 router.get("/search", searchContacts);
 
-router.post("/contact", userAuth, createContact);
+router.post("/contact", authMiddleware, authorizeRoles("user"), createContact);
 
-router.get("/contacts", userAuth, getAllContacts);
+router.get(
+  "/contacts",
+  authMiddleware,
+  authorizeRoles("service"),
+  getAllContacts,
+);
 
-router.get("/contact/:id", userAuth, getContactById);
+router.get(
+  "/contact/:id",
+  authMiddleware,
+  authorizeRoles("service"),
+  getContactById,
+);
 
-router.put("/contact/:id/status", userAuth, updateContactStatus);
+router.put(
+  "/contact/:id/status",
+  authMiddleware,
+  authorizeRoles("service"),
+  updateContactStatus,
+);
 
-router.delete("/contact/:id", userAuth, deleteContact);
+router.delete(
+  "/contact/:id",
+  authMiddleware,
+  authorizeRoles("service"),
+  deleteContact,
+);
 
 export default router;
