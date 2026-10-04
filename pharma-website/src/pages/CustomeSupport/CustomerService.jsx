@@ -9,6 +9,8 @@ import {
   LoaderCircle,
   X,
   Trash2,
+  FileText,
+  Download,
 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -27,16 +29,19 @@ const CustomerService = () => {
   const requests = useSelector((state) => state.contact.Customers);
 
   const [loading, setLoading] = useState(true);
-
   const [selectedRequest, setSelectedRequest] = useState(null);
-
   const [viewLoading, setViewLoading] = useState(false);
-
-  // Search
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Filter / Sort
   const [sortOrder, setSortOrder] = useState("oldest");
+
+  // Normalize uploaded file path and create the correct backend URL
+  const getFileUrl = (filePath) => {
+    if (!filePath) return "";
+
+    const normalizedPath = filePath.replace(/\\/g, "/").replace(/^\/+/, "");
+
+    return `http://localhost:5000/${normalizedPath}`;
+  };
 
   // Get all customer requests
   const getAllRequests = async () => {
@@ -59,7 +64,7 @@ const CustomerService = () => {
     }
   };
 
-  // Search customer requests from backend
+  // Search customer requests
   const searchRequests = async () => {
     try {
       const params = new URLSearchParams();
@@ -86,12 +91,10 @@ const CustomerService = () => {
     }
   };
 
-  // Get all requests when page loads
   useEffect(() => {
     getAllRequests();
   }, []);
 
-  // Search whenever searchTerm changes
   useEffect(() => {
     const delaySearch = setTimeout(() => {
       searchRequests();
@@ -149,7 +152,7 @@ const CustomerService = () => {
     }
   };
 
-  // Delete request
+  // Delete entire request
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this request?",
@@ -177,13 +180,41 @@ const CustomerService = () => {
       toast.error(error.response?.data?.message || "Failed to delete request");
     }
   };
+  const handleDeleteFile = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this attached file?",
+    );
 
-  // Close modal
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const response = await deleteData(
+        `${Endpoint.deleteContactFile.url}/${id}`,
+      );
+
+      if (response.data.success) {
+        toast.success("File deleted successfully");
+
+        setSelectedRequest((prev) => ({
+          ...prev,
+          file: null,
+        }));
+
+        await getAllRequests();
+      }
+    } catch (error) {
+      console.log(error);
+
+      toast.error(error.response?.data?.message || "Failed to delete file");
+    }
+  };
   const closeModal = () => {
     setSelectedRequest(null);
   };
 
-  // Status style
+  // Status styles
   const getStatusStyle = (status) => {
     if (status === "Pending") {
       return {
@@ -259,7 +290,6 @@ const CustomerService = () => {
               className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 outline-none transition focus:border-primary"
             >
               <option value="oldest">Oldest first</option>
-
               <option value="newest">Newest first</option>
             </select>
           </div>
@@ -331,7 +361,6 @@ const CustomerService = () => {
                 ) : (
                   sortedRequests.map((request) => {
                     const currentStatus = request.status || "Pending";
-
                     const statusStyle = getStatusStyle(currentStatus);
 
                     return (
@@ -412,13 +441,11 @@ const CustomerService = () => {
                               className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600 outline-none transition focus:border-primary"
                             >
                               <option value="Pending">Pending</option>
-
                               <option value="In Progress">In Progress</option>
-
                               <option value="Resolved">Resolved</option>
                             </select>
 
-                            {/* Delete */}
+                            {/* Delete Request */}
                             <button
                               type="button"
                               onClick={() => handleDelete(request._id)}
@@ -451,7 +478,7 @@ const CustomerService = () => {
       {/* View Request Modal */}
       {selectedRequest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
@@ -555,6 +582,77 @@ const CustomerService = () => {
                   <div className="mt-2 rounded-lg bg-gray-50 p-4 text-sm leading-6 text-gray-700">
                     {selectedRequest.message}
                   </div>
+                </div>
+
+                {/* Attached File */}
+                <div className="md:col-span-2">
+                  <p className="text-xs font-medium uppercase text-gray-400">
+                    Attached Document
+                  </p>
+
+                  {selectedRequest.file ? (
+                    <div className="mt-2 flex flex-col gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                      {/* File Information */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-red-50">
+                          <FileText size={22} className="text-red-600" />
+                        </div>
+
+                        <div>
+                          <p className="text-sm font-medium text-gray-800">
+                            {selectedRequest.file.fileName}
+                          </p>
+
+                          <p className="mt-1 text-xs text-gray-500">
+                            PDF •{" "}
+                            {(
+                              selectedRequest.file.fileSize /
+                              (1024 * 1024)
+                            ).toFixed(2)}{" "}
+                            MB
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* File Actions */}
+                      <div className="flex flex-wrap gap-2">
+                        {/* View PDF */}
+                        <a
+                          href={getFileUrl(selectedRequest.file.filePath)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90"
+                        >
+                          <Eye size={16} />
+                          View PDF
+                        </a>
+
+                        {/* Download PDF */}
+                        <a
+                          href={getFileUrl(selectedRequest.file.filePath)}
+                          download={selectedRequest.file.fileName}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+                        >
+                          <Download size={16} />
+                          Download
+                        </a>
+
+                        {/* Delete File */}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFile(selectedRequest._id)}
+                          className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                        >
+                          <Trash2 size={16} />
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-2 rounded-lg border border-dashed border-gray-200 bg-gray-50 p-4 text-sm text-gray-400">
+                      No document was attached to this request.
+                    </div>
+                  )}
                 </div>
 
                 {/* Submitted */}

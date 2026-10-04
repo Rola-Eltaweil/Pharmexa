@@ -9,7 +9,7 @@ import {
 } from "../controllers/Service.js";
 
 import authMiddleware from "../middleware/auth.js";
-import authorizeRoles from "../middleware/rolaAuth.js";
+import authorizeRoles from "../middleware/roleAuth.js";
 
 const router = express.Router();
 

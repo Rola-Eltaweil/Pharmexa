@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import form from "../assets/slide2.jpg";
 
@@ -16,14 +17,17 @@ const Contact = () => {
     requestType: "",
     subject: "",
     message: "",
+    file: null,
   });
 
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, files } = e.target;
 
     setdata((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: files ? files[0] : value,
     }));
   };
 
@@ -31,9 +35,20 @@ const Contact = () => {
     try {
       e.preventDefault();
 
-      const contact = await postData(Endpoint.createContact.url, data);
+      const formData = new FormData();
 
-      console.log(contact);
+      formData.append("name", data.name);
+      formData.append("email", data.email);
+      formData.append("companyName", data.companyName);
+      formData.append("requestType", data.requestType);
+      formData.append("subject", data.subject);
+      formData.append("message", data.message);
+
+      if (data.file) {
+        formData.append("file", data.file);
+      }
+
+      const contact = await postData(Endpoint.createContact.url, formData);
 
       if (contact.data.success) {
         toast.success(contact.data.message);
@@ -45,8 +60,12 @@ const Contact = () => {
           requestType: "",
           subject: "",
           message: "",
+          file: null,
         });
+
+        fileInputRef.current.value = "";
       }
+      navigate("/my-requests");
     } catch (error) {
       console.log(error);
 
@@ -117,17 +136,12 @@ const Contact = () => {
               </option>
 
               <option value="Product Inquiry">Product Inquiry</option>
-
               <option value="Service Inquiry">Service Inquiry</option>
-
               <option value="Export / Distribution Inquiry">
                 Export / Distribution Inquiry
               </option>
-
               <option value="Partnership Inquiry">Partnership Inquiry</option>
-
               <option value="General Inquiry">General Inquiry</option>
-
               <option value="Other">Other</option>
             </select>
           </div>
@@ -149,6 +163,22 @@ const Contact = () => {
             placeholder="Tell us about your needs..."
             className="w-full rounded-lg border border-gray-200 px-4 py-3 outline-none focus:border-primary resize-none"
           ></textarea>
+
+          <div>
+            <label className="block mb-2 font-medium text-[0.9rem]">
+              Attach Document -pdf-{" "}
+              <span className="text-gray-500">(Optional)</span>
+            </label>
+
+            <input
+              ref={fileInputRef}
+              onChange={handleChange}
+              type="file"
+              name="file"
+              accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+              className="w-full rounded-lg border border-gray-200 px-4 py-3 text-[0.9rem] outline-none focus:border-primary"
+            />
+          </div>
 
           <button
             type="submit"

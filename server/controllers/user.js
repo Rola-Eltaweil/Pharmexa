@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
 import user from "../models/user.js";
+import Contact from "../models/Contact.js";
+
 import Product from "../models/Product.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -340,6 +342,23 @@ export const searchProducts = async (req, res) => {
       success: false,
       message: "Failed to search products",
       error: error.message,
+    });
+  }
+};
+export const getMyContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find({
+      userId: req._id,
+    }).sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      contacts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

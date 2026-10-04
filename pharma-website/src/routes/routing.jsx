@@ -14,6 +14,7 @@ import CustomerDashboard from "../pages/customer/customerDashboard";
 import AdminService from "../pages/Admin/AdminService";
 import CustomerService from "../pages/CustomeSupport/CustomerService";
 import { CustomerServiceProtected } from "../pages/CustomeSupport/CustomerServiceProtected";
+import RequestUser from "../pages/RequestUser";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "product",
         element: <Product />,
+      },
+      {
+        path: "my-requests",
+        element: <RequestUser />,
       },
       {
         path: "customer_Dahboard",

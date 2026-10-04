@@ -1,8 +1,12 @@
 import Contact from "../models/Contact.js";
+import fs from "fs";
+import path from "path";
 
 export const createContact = async (req, res) => {
   try {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const file = req.file;
+    const userId = req._id;
 
     const { name, email, companyName, requestType, subject, message } =
       req.body;
@@ -33,12 +37,21 @@ export const createContact = async (req, res) => {
     }
 
     const createOne = new Contact({
+      userId,
       name,
       email,
       companyName,
       requestType,
       subject,
       message,
+      file: file
+        ? {
+            fileName: file.originalname,
+            filePath: `/uploads/${file.filename}`,
+            fileType: file.mimetype,
+            fileSize: file.size,
+          }
+        : undefined,
     });
 
     await createOne.save();
@@ -55,7 +68,6 @@ export const createContact = async (req, res) => {
     });
   }
 };
-
 export const getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({ createdAt: -1 });
@@ -72,7 +84,6 @@ export const getAllContacts = async (req, res) => {
   }
 };
 
-// Get one request by ID
 export const getContactById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -98,7 +109,6 @@ export const getContactById = async (req, res) => {
   }
 };
 
-// Update request status
 export const updateContactStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -139,7 +149,6 @@ export const updateContactStatus = async (req, res) => {
   }
 };
 
-// Delete request
 export const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
@@ -161,6 +170,58 @@ export const deleteContact = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+export const deleteContactFile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const contact = await Contact.findById(id);
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: "Request not found",
+      });
+    }
+
+    if (!contact.file || !contact.file.filePath) {
+      return res.status(404).json({
+        success: false,
+        message: "No file attached to this request",
+      });
+    }
+
+    // Get only the file name
+    // Works with both:
+    // /uploads/file.pdf
+    // uploads\\file.pdf
+    const fileName = path.basename(contact.file.filePath.replace(/\\/g, "/"));
+
+    const fullFilePath = path.join(process.cwd(), "uploads", fileName);
+
+    // Delete physical file if it exists
+    if (fs.existsSync(fullFilePath)) {
+      fs.unlinkSync(fullFilePath);
+    }
+
+    // Remove file metadata from MongoDB
+    contact.file = undefined;
+
+    await contact.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "File deleted successfully",
+    });
+  } catch (error) {
+    console.log("Delete file error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to delete file",
+      error: error.message,
     });
   }
 };

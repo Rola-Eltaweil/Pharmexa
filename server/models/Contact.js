@@ -2,6 +2,12 @@ import mongoose from "mongoose";
 
 const contactscheme = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
+
     name: {
       type: String,
       required: true,
@@ -11,29 +17,41 @@ const contactscheme = new mongoose.Schema(
       type: String,
       required: true,
     },
+
     subject: {
       type: String,
       required: true,
     },
+
     requestType: {
       type: String,
       required: true,
     },
+
     message: {
       type: String,
       required: true,
     },
+
     companyName: {
       type: String,
     },
+
     status: {
       type: String,
       enum: ["Pending", "In Progress", "Resolved"],
       default: "Pending",
     },
+
+    file: {
+      fileName: String,
+      filePath: String,
+      fileType: String,
+      fileSize: Number,
+    },
   },
   { timestamps: true },
 );
+const Contact = mongoose.model("Contact", contactscheme);
 
-const contact = mongoose.model("contact", contactscheme);
-export default contact;
+export default Contact;

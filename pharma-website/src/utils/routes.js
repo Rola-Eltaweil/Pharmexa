@@ -24,10 +24,15 @@ export const Endpoint = {
     method: "DELETE",
     url: `${BaseURL}/api/customerService/contact`,
   },
+  deleteContactFile: {
+    method: "DELETE",
+    url: `${BaseURL}/api/customerService/deleteContactFile`,
+  },
   searchContacts: {
     method: "GET",
     url: `${BaseURL}/api/customerService/search`,
   },
+
   addProduct: {
     method: "POST",
     url: `${BaseURL}/api/admin/dashboard/addProduct`,
@@ -55,7 +60,10 @@ export const Endpoint = {
     method: "POST",
     url: `${BaseURL}/api/register`,
   },
-
+  myRequests: {
+    method: "GET",
+    url: `${BaseURL}/api/myRequests`,
+  },
   loginuser: {
     method: "POST",
     url: `${BaseURL}/api/login`,

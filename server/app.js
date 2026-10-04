@@ -8,10 +8,11 @@ import Product from "./routing/Product.js";
 import userAuth from "./routing/user.js";
 import cookieParser from "cookie-parser";
 import Service from "./routing/Service.js";
+import path from "path";
+
 dotenv.config();
 
 const app = express();
-
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
@@ -21,8 +22,9 @@ app.use(
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(cookieParser());
-
 dataBaseConnection();
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 const PORT = 5000;
 app.use("/api/customerService", contact);
 app.use("/api/admin/dashboard", Product);
