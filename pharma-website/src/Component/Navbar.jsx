@@ -5,12 +5,14 @@ import {
   LayoutDashboard,
   FileText,
   Headset,
+  FolderPlus,
 } from "lucide-react";
 
 import React, { useState } from "react";
 import { FaBarsStaggered } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+
 import { postData } from "../utils/apiSummary";
 import { Endpoint } from "../utils/routes";
 import { clearUser } from "../redux/userSlice";
@@ -23,6 +25,8 @@ const Nav = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const role = user?.role?.toLowerCase();
 
   const handleLogout = async () => {
     try {
@@ -37,10 +41,22 @@ const Nav = () => {
     }
   };
 
+  const dashboardPath =
+    role === "teammember" ? "/dashboard/team-member" : "/dashboard";
+
+  const dashboardTitle =
+    role === "teammember" ? "Team Dashboard" : "My Dashboard";
+
+  const dashboardDescription =
+    role === "teammember"
+      ? "View your assigned projects"
+      : "Manage your account";
+
   return (
     <div className="bg-nav">
       <nav className="container flex items-center justify-between py-4">
         {/* Logo */}
+
         <Link to="/">
           <div className="flex items-center">
             <span className="text-2xl font-black tracking-wide text-primary">
@@ -51,12 +67,14 @@ const Nav = () => {
         </Link>
 
         {/* Mobile Menu Button */}
+
         <FaBarsStaggered
           onClick={() => setopenNav(true)}
           className="flex cursor-pointer items-end justify-center text-3xl text-primary md:hidden"
         />
 
         {/* Desktop Navigation */}
+
         <div className="hidden items-center gap-8 md:flex">
           <a href="#about" className="nav-item">
             About
@@ -75,9 +93,11 @@ const Nav = () => {
           </a>
 
           {/* User */}
+
           {user ? (
             <div className="relative">
               {/* User Button */}
+
               <button
                 onClick={() => setOpenDropdown(!openDropdown)}
                 className="flex cursor-pointer items-center gap-2 rounded-full border border-gray-200 bg-white px-3 py-2 transition hover:bg-gray-50"
@@ -105,13 +125,14 @@ const Nav = () => {
               </button>
 
               {/* Dropdown */}
+
               {openDropdown && (
                 <div className="absolute right-0 top-full z-50 mt-3 w-64 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-xl">
-                  {/* Menu Items */}
                   <div className="p-2">
                     {/* Dashboard */}
+
                     <Link
-                      to="/customer_Dahboard"
+                      to={dashboardPath}
                       onClick={() => setOpenDropdown(false)}
                       className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition hover:bg-blue-50 hover:text-primary"
                     >
@@ -120,16 +141,17 @@ const Nav = () => {
                       </div>
 
                       <div>
-                        <p className="font-medium">My Dashboard</p>
+                        <p className="font-medium">{dashboardTitle}</p>
 
                         <p className="text-xs text-gray-400">
-                          Manage your account
+                          {dashboardDescription}
                         </p>
                       </div>
                     </Link>
 
                     {/* My Requests */}
-                    {user?.role?.toLowerCase() === "user" && (
+
+                    {role === "user" && (
                       <Link
                         to="/my-requests"
                         onClick={() => setOpenDropdown(false)}
@@ -149,8 +171,31 @@ const Nav = () => {
                       </Link>
                     )}
 
+                    {/* Project Requests */}
+
+                    {role === "user" && (
+                      <Link
+                        to="/project-requests"
+                        onClick={() => setOpenDropdown(false)}
+                        className="mt-1 flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-gray-700 transition hover:bg-blue-50 hover:text-primary"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+                          <FolderPlus size={18} />
+                        </div>
+
+                        <div>
+                          <p className="font-medium">Project Requests</p>
+
+                          <p className="text-xs text-gray-400">
+                            Request a new project
+                          </p>
+                        </div>
+                      </Link>
+                    )}
+
                     {/* Customer Service */}
-                    {user?.role?.toLowerCase() === "service" && (
+
+                    {role === "service" && (
                       <Link
                         to="/CustomerService"
                         onClick={() => setOpenDropdown(false)}
@@ -171,9 +216,11 @@ const Nav = () => {
                     )}
 
                     {/* Divider */}
+
                     <div className="my-2 border-t border-gray-100" />
 
                     {/* Logout */}
+
                     <button
                       onClick={handleLogout}
                       className="flex w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-3 text-sm text-red-600 transition hover:bg-red-50"
@@ -196,6 +243,7 @@ const Nav = () => {
             </div>
           ) : (
             /* Get Started */
+
             <Link to="/login">
               <p className="rounded-full bg-linear-to-r from-primary to-blue-400 px-6 py-2 text-[18px] text-white">
                 Get Started
@@ -205,6 +253,7 @@ const Nav = () => {
         </div>
 
         {/* Mobile Navigation */}
+
         {openNav && (
           <div className="absolute left-0 top-20 z-50 flex w-full flex-col items-center gap-8 bg-nav py-10 md:hidden">
             <a
@@ -240,18 +289,24 @@ const Nav = () => {
             </a>
 
             {/* Mobile - User Links */}
+
             {user && (
               <>
+                {/* Dashboard */}
+
                 <Link
-                  to="/customer_Dahboard"
+                  to={dashboardPath}
                   onClick={() => setopenNav(false)}
                   className="flex items-center gap-2 text-gray-700"
                 >
                   <LayoutDashboard size={18} />
-                  My Dashboard
+
+                  {role === "teammember" ? "Team Dashboard" : "My Dashboard"}
                 </Link>
 
-                {user?.role?.toLowerCase() === "user" && (
+                {/* My Requests */}
+
+                {role === "user" && (
                   <Link
                     to="/my-requests"
                     onClick={() => setopenNav(false)}
@@ -262,7 +317,22 @@ const Nav = () => {
                   </Link>
                 )}
 
-                {user?.role?.toLowerCase() === "service" && (
+                {/* Project Requests */}
+
+                {role === "user" && (
+                  <Link
+                    to="/project-requests"
+                    onClick={() => setopenNav(false)}
+                    className="flex items-center gap-2 text-gray-700"
+                  >
+                    <FolderPlus size={18} />
+                    Project Requests
+                  </Link>
+                )}
+
+                {/* Customer Service */}
+
+                {role === "service" && (
                   <Link
                     to="/CustomerService"
                     onClick={() => setopenNav(false)}
@@ -276,6 +346,7 @@ const Nav = () => {
             )}
 
             {/* Get Started */}
+
             {!user && (
               <Link
                 to="/login"

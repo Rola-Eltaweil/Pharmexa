@@ -10,7 +10,8 @@ import {
   getProductsuser,
   searchProducts,
   getMyContacts,
-} from "../controllers/User.js";
+  getTeamMembers,
+} from "../controllers/user.js";
 
 import authMiddleware from "../middleware/auth.js";
 import authorizeRoles from "../middleware/roleAuth.js";
@@ -33,5 +34,11 @@ router.get(
   authMiddleware,
   authorizeRoles("user"),
   getMyContacts,
+);
+router.get(
+  "/team-members",
+  authMiddleware,
+  authorizeRoles("admin"),
+  getTeamMembers,
 );
 export default router;

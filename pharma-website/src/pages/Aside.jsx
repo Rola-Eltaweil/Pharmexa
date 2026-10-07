@@ -3,13 +3,16 @@ import {
   LayoutDashboard,
   Package,
   BriefcaseBusiness,
+  FolderKanban,
+  FileCheck2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Aside = () => {
   return (
     <aside className="hidden lg:flex w-64 bg-white border-r border-slate-200 flex-col">
       {/* Logo */}
-      <Link to={"/dashboard"}>
+      <Link to={"/"}>
         <div className="px-6 py-7 border-b border-slate-100">
           <h1 className="text-2xl font-bold text-primary">PHARMEXA</h1>
 
@@ -26,6 +29,7 @@ const Aside = () => {
         </p>
 
         <nav className="flex flex-col gap-3">
+          {/* Dashboard */}
           <Link to={"/dashboard"}>
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary text-white shadow-sm cursor-pointer">
               <LayoutDashboard size={19} />
@@ -33,12 +37,15 @@ const Aside = () => {
             </button>
           </Link>
 
+          {/* Products */}
           <Link to={"/dashboard/products"}>
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
               <Package size={19} />
               <span className="text-sm font-medium">Products</span>
             </button>
           </Link>
+
+          {/* Service */}
           <Link to={"/dashboard/service"}>
             <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
               <BriefcaseBusiness size={19} />
@@ -46,6 +53,23 @@ const Aside = () => {
             </button>
           </Link>
 
+          {/* Project Dashboard */}
+          <Link to={"/dashboard/projects"}>
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+              <FolderKanban size={19} />
+              <span className="text-sm font-medium">Projects</span>
+            </button>
+          </Link>
+
+          {/* Project Requests */}
+          <Link to={"/dashboard/projectRequest"}>
+            <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
+              <FileCheck2 size={19} />
+              <span className="text-sm font-medium">Project Requests</span>
+            </button>
+          </Link>
+
+          {/* Content */}
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 transition cursor-pointer">
             <ClipboardList size={19} />
             <span className="text-sm font-medium">Content</span>

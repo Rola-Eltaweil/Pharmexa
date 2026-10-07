@@ -92,6 +92,10 @@ export const Endpoint = {
     method: "GET",
     url: `${BaseURL}/api/search`,
   },
+  teamMembers: {
+    method: "GET",
+    url: `${BaseURL}/api/team-members`,
+  },
   //service
   allServices: {
     method: "GET",
@@ -113,5 +117,55 @@ export const Endpoint = {
   deleteService: {
     method: "DELETE",
     url: `${BaseURL}/api/admin/dashboard/service`,
+  },
+  // Project Management
+  projects: {
+    method: "GET",
+    url: `${BaseURL}/api/projects`,
+  },
+
+  projectStats: {
+    method: "GET",
+    url: `${BaseURL}/api/projects/stats`,
+  },
+
+  createProject: {
+    method: "POST",
+    url: `${BaseURL}/api/projects/create`,
+  },
+
+  updateProject: {
+    method: "PUT",
+    url: `${BaseURL}/api/projects`,
+  },
+
+  deleteProject: {
+    method: "DELETE",
+    url: `${BaseURL}/api/projects`,
+  },
+
+  // for project request
+  createProjectRequest: {
+    method: "POST",
+    url: `${BaseURL}/api/project-requests/create`,
+  },
+
+  myProjectRequests: {
+    method: "GET",
+    url: `${BaseURL}/api/project-requests/my-requests`,
+  },
+
+  allProjectRequests: {
+    method: "GET",
+    url: `${BaseURL}/api/project-requests`,
+  },
+
+  updateProjectRequestStatus: {
+    method: "PATCH",
+    url: `${BaseURL}/api/project-requests`,
+  },
+  approvedProjectRequests: {
+    method: "GET",
+    url: `${BaseURL}/api/project-requests/approved`,
   },
 };

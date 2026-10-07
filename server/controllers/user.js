@@ -362,3 +362,21 @@ export const getMyContacts = async (req, res) => {
     });
   }
 };
+export const getTeamMembers = async (req, res) => {
+  try {
+    const teamMembers = await user
+      .find({ role: "teamMember" })
+      .select("_id name email role")
+      .sort({ name: 1 });
+
+    res.status(200).json({
+      success: true,
+      teamMembers,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
